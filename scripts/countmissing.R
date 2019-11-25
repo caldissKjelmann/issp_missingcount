@@ -22,7 +22,7 @@ surveyvars <- na.omit(str_extract(colnames(issp2017), "^v\\d{1,2}"))
 vars_mis9899 <- c("v36", "v37", "v44")
 
 #vector for variables using only 99 for missing values
-vars_noans99 <- c("v48", "v49", "v50", "v51", "v52", "v65", "v66")
+vars_noans99 <- c("v48", "v49", "v50", "v51", "v52", "v65", "v66", "v67")
 
 #vector for variables using only 9 for missing values
 vars_noans9 <- c("v60")
