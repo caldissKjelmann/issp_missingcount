@@ -8,8 +8,8 @@
 library(haven)
 library(tidyverse)
 
-data_path <- "C:/Users/kjelm/OneDrive - Aalborg Universitet/CALDISS_projects/issp_missing_nov19/data/"
-out_path <- "C:/Users/kjelm/OneDrive - Aalborg Universitet/CALDISS_projects/issp_missing_nov19/output/"
+data_path <- "./data/"
+out_path <- "./output/"
 
 setwd(data_path)
 issp2017 <- read_dta("ZA6980_v2-0-0.dta")
@@ -32,7 +32,7 @@ vars_mis89 <- surveyvars[!(surveyvars %in% c(vars_mis9899, vars_noans99, vars_no
 
 #subsetting data to include only studyno, country and survey questions
 issp_subset <- issp2017 %>%
-  select("studyno", "country", surveyvars) %>%
+  select("studyno", "country", all_of(surveyvars)) %>%
   mutate(country = as_factor(country))
 
 #functions for counting missing values
@@ -59,25 +59,25 @@ count_norep99 <- function(var){
 #df for missing using 8
 df_count_undec8 <- issp_subset %>%
   group_by(country, studyno) %>%
-  summarize_at(vars(vars_mis89), funs(count_undec8))
+  summarise(across(.cols = all_of(vars_mis89), .fns = count_undec8))
 colnames(df_count_undec8)[-c(1,2)] <- paste0(colnames(df_count_undec8)[-c(1,2)], "_count_undec")
 
 #df for missing using 98
 df_count_undec98 <- issp_subset %>%
   group_by(country, studyno) %>%
-  summarize_at(vars(vars_mis9899), funs(count_undec98))
+  summarise(across(.cols = all_of(vars_mis9899), .fns = count_undec98))
 colnames(df_count_undec98)[-c(1,2)] <- paste0(colnames(df_count_undec98)[-c(1,2)], "_count_undec")
 
 #df for missing using 9
 df_count_norep9 <- issp_subset %>%
   group_by(country, studyno) %>%
-  summarize_at(vars(c(vars_mis89, vars_noans9)), funs(count_norep9))
+  summarise(across(.cols = all_of(c(vars_mis89, vars_noans9)), .fns = count_norep9))
 colnames(df_count_norep9)[-c(1,2)] <- paste0(colnames(df_count_norep9)[-c(1,2)], "_count_norep")
 
 #df for missing using 99
 df_count_norep99 <- issp_subset %>%
   group_by(country, studyno) %>%
-  summarize_at(vars(c(vars_mis9899, vars_noans99)), funs(count_norep99))
+  summarise(across(.cols = all_of(c(vars_mis9899, vars_noans99)), .fns = count_norep99))
 colnames(df_count_norep99)[-c(1,2)] <- paste0(colnames(df_count_norep99)[-c(1,2)], "_count_norep")
 
 #df for n - number of respondents (in total per country)
